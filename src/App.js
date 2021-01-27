@@ -10,8 +10,10 @@ function reducer( todos, action ) {
   switch (action.eventType) {
     case ACTIONS.ADD_TODO:
       return [...todos, newTodo(action.payload.name)]
+      break;
     case ACTIONS.COMPLETE_TODO:
-      return completeTodo(todos, action.payload.indexToComplete)
+      return toggleTodo(todos, action.payload.indexToToggle)
+      break;
     default:
       return [todos]
   }
@@ -21,19 +23,18 @@ function newTodo(name) {
   return { 
     id: Date.now(),
     name: name,
-    completed: false
+    complete: false
   }
 }
 
-function completeTodo(todos, indexToComplete) {
-  indexToComplete = parseInt(indexToComplete)
-  const newTodos = todos.map( (todo, index) => {
-     if (index === indexToComplete) {
-       todo.completed = true
-       return todo
-     } else {
-       return todo
-     }
+function toggleTodo(todos, indexToToggle) {
+  indexToToggle = parseInt(indexToToggle)
+  let newTodos = todos.map( (todo, index) => {
+    if (index === indexToToggle) {
+      todo = {...todo}
+      todo.complete = !todo.complete
+    }
+    return todo
   })
 
   return newTodos
@@ -46,9 +47,10 @@ function App() {
   function handleSubmit(e) {
     e.preventDefault()
 
-    if (nameState.includes("COMP")) {
-      let indexToComplete = nameState.split(' ')[1]
-      dispatch({ eventType: ACTIONS.COMPLETE_TODO, payload: {indexToComplete: indexToComplete} })
+    // Type CO # -> where # is the index of the todo you want to toggle
+    if (nameState.includes("CO")) {
+      let indexToToggle = nameState.split(' ')[1]
+      dispatch({ eventType: ACTIONS.COMPLETE_TODO, payload: {indexToToggle : indexToToggle} })
       setNameState('')
     } else {
       dispatch({ eventType: ACTIONS.ADD_TODO, payload: {name: nameState} })
@@ -64,7 +66,7 @@ function App() {
       text = text + JSON.stringify(todo) +"\n"
     }
     todoAnchor.innerText = text
-
+    return () => {}
   }, [todos]) 
 
   return (
