@@ -3,11 +3,11 @@ import Todo from './Todo.js'
 
 export const ACTIONS = {
   ADD_TODO: 'add-todo',
-  TOGGLE_TODO: 'toggle-todo'
+  TOGGLE_TODO: 'toggle-todo',
+  DELETE_TODO: 'delete-todo'
 }
 
 function reducer( todos, action ) {
-  console.log({todos}, {action})
   switch (action.eventType) {
     case ACTIONS.ADD_TODO:
       return [...todos, newTodo(action.payload.name)]
@@ -20,8 +20,14 @@ function reducer( todos, action ) {
         return todo
       })
       break;
+    case ACTIONS.DELETE_TODO:
+      return todos.filter( todo => {
+        console.log(todo, action.payload.id)
+        return todo.id !== action.payload.id
+      })
+      break;
     default:
-      return [todos]
+      return todos
   }
 }
 
@@ -41,12 +47,6 @@ function App() {
     e.preventDefault()
     dispatch({ eventType: ACTIONS.ADD_TODO, payload: {name: nameState} })
     setNameState('')
-  }
-
-  function handleToggle(e) {
-    e.preventDefault()
-    console.log(e)
-    dispatch({ eventType: ACTIONS.TOGGLE_TODO, payload: {id: id}})
   }
 
   useEffect( () => {

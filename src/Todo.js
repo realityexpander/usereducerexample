@@ -15,8 +15,14 @@ export default function Todo(props) {
       <button onClick={
           () => dispatch({ eventType: ACTIONS.TOGGLE_TODO, payload: {id: todo.id} })
         }
-      >Toggle</button>
-      <button color='red'>Delete</button>
+        >Toggle
+      </button>
+      <button style={{backgroundColor:'red'}}
+        onClick={
+          () => dispatch({ eventType: ACTIONS.DELETE_TODO, payload: {id: todo.id} })
+        }
+        >Delete
+      </button>
     </div>
   )
 }
