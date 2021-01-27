@@ -22,7 +22,6 @@ function reducer( todos, action ) {
       break;
     case ACTIONS.DELETE_TODO:
       return todos.filter( todo => {
-        console.log(todo, action.payload.id)
         return todo.id !== action.payload.id
       })
       break;
