@@ -1,8 +1,9 @@
 import React, { useReducer, useState, useEffect } from 'react'
+import Todo from './Todo.js'
 
-const ACTIONS = {
+export const ACTIONS = {
   ADD_TODO: 'add-todo',
-  COMPLETE_TODO: 'complete-todo'
+  TOGGLE_TODO: 'toggle-todo'
 }
 
 function reducer( todos, action ) {
@@ -11,8 +12,13 @@ function reducer( todos, action ) {
     case ACTIONS.ADD_TODO:
       return [...todos, newTodo(action.payload.name)]
       break;
-    case ACTIONS.COMPLETE_TODO:
-      return toggleTodo(todos, action.payload.indexToToggle)
+    case ACTIONS.TOGGLE_TODO:
+      return todos.map( todo => {
+        if (todo.id === action.payload.id) {
+          return {...todo, complete: !todo.complete}
+        }
+        return todo
+      })
       break;
     default:
       return [todos]
@@ -27,36 +33,20 @@ function newTodo(name) {
   }
 }
 
-function toggleTodo(todos, indexToToggle) {
-  indexToToggle = parseInt(indexToToggle)
-  let newTodos = todos.map( (todo, index) => {
-    if (index === indexToToggle) {
-      todo = {...todo}
-      todo.complete = !todo.complete
-    }
-    return todo
-  })
-
-  return newTodos
-}
-
 function App() {
   const [todos, dispatch] = useReducer( reducer, [])
   const [nameState, setNameState] = useState('')
 
   function handleSubmit(e) {
     e.preventDefault()
+    dispatch({ eventType: ACTIONS.ADD_TODO, payload: {name: nameState} })
+    setNameState('')
+  }
 
-    // Type CO # -> where # is the index of the todo you want to toggle
-    if (nameState.includes("CO")) {
-      let indexToToggle = nameState.split(' ')[1]
-      dispatch({ eventType: ACTIONS.COMPLETE_TODO, payload: {indexToToggle : indexToToggle} })
-      setNameState('')
-    } else {
-      dispatch({ eventType: ACTIONS.ADD_TODO, payload: {name: nameState} })
-      setNameState('')
-    }
-
+  function handleToggle(e) {
+    e.preventDefault()
+    console.log(e)
+    dispatch({ eventType: ACTIONS.TOGGLE_TODO, payload: {id: id}})
   }
 
   useEffect( () => {
@@ -76,6 +66,9 @@ function App() {
                value={nameState} 
                onChange={e => setNameState(e.target.value)} />
       </form>
+      {todos.map( todo => {
+        return <Todo key={todo.id} todo={todo} dispatch={dispatch} />
+      })}
     </>
   );
 }
